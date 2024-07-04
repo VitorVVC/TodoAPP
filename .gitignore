@@ -1,0 +1,56 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below if you use vendoring)
+# vendor/
+
+# Go workspace file
+go.work
+
+# Go modules
+go.sum
+go.mod
+
+# IDE directories and files
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vscode/
+.vscode-test/
+*.code-workspace
+
+# Log files
+*.log
+
+# Binary files
+bin/
+dist/
+
+# Docker files
+docker-compose.override.yml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Config files
+config.yaml
+config.toml
+config.json
+
+# Build directories
+build/
