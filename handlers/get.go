@@ -2,28 +2,33 @@ package handlers
 
 import (
 	"api-postgresql/models"
-	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"log"
+	"api-postgresql/services/controllers"
+	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 )
 
-func Get(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+func Get(c echo.Context, dbConfig *models.DBConfig) error {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Printf("Erro ao fazer parse do ID: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		response := models.HTTPErrorResponse{
+			Message: "Invalid ID",
+		}
+		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	todo, err := models.Get(int64(id))
+	todo, err := controllers.Get(dbConfig, int64(id))
 	if err != nil {
-		log.Printf("Erro ao update do: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		response := models.HTTPErrorResponse{
+			ErrorMessage: err.Error(),
+			Message:      "Failed to get todo",
+		}
+		return c.JSON(http.StatusInternalServerError, response)
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todo)
+	response := models.HTTPResponse{
+		Data: todo,
+	}
+	return c.JSON(http.StatusOK, response)
 }
