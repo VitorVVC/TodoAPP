@@ -2,39 +2,33 @@ package handlers
 
 import (
 	"api-postgresql/models"
+	"api-postgresql/services/controllers"
 	"encoding/json"
-	"fmt"
-	"log"
+	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
-func Create(w http.ResponseWriter, r *http.Request) {
+func Create(c echo.Context, dbConfig *models.DBConfig) error {
 	var todo models.Todo
 
-	err := json.NewDecoder(r.Body).Decode(&todo)
+	err := json.NewDecoder(c.Request().Body).Decode(&todo)
 	if err != nil {
-		log.Printf("Erro ao fazer decode do JSON: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{
+			Message: "Invalid request payload",
+		})
 	}
 
-	id, err := models.Insert(todo)
-
-	var resp map[string]any
-
-	// TODO -> Não subir o ERROR booleano, e sim o status code
+	id, err := controllers.Create(dbConfig, todo)
 	if err != nil {
-		resp = map[string]any{
-			"Error":   true,
-			"Message": fmt.Sprintf("Failed to create todo. Error: %v", err),
-		}
-	} else {
-		resp = map[string]any{
-			"Error":   false,
-			"Message": fmt.Sprintf("Todo created successfully. ID: %d", id),
-		}
+		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{
+			ErrorMessage: err.Error(),
+			Message:      "Failed to create todo",
+		})
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	return c.JSON(http.StatusCreated, models.HTTPResponse{
+		Data: models.CreateTodoResponse{
+			ID: id,
+		},
+	})
 }
