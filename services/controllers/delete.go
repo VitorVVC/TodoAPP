@@ -1,4 +1,4 @@
-package models
+package controllers
 
 import (
 	"api-postgresql/db"
