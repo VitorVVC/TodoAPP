@@ -4,23 +4,36 @@ import (
 	"api-postgresql/configs"
 	"api-postgresql/handlers"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"net/http"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	err := configs.Load()
-
+	cfg, err := configs.LoadConfig()
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Erro ao carregar a configuração: %v", err))
 	}
 
-	r := chi.NewRouter()
-	r.Post("/", handlers.Create)
-	r.Put("/{id}", handlers.Update)
-	r.Delete("/{id}", handlers.Delete)
-	r.Get("/", handlers.List)
-	r.Get("/{id}", handlers.Get)
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
-	http.ListenAndServe(fmt.Sprintf(":%s", configs.GetServerPort()), r)
+	e.POST("/", func(c echo.Context) error {
+		return handlers.Create(c, &cfg.DB)
+	})
+	e.PUT("/:id", func(c echo.Context) error {
+		return handlers.Update(c, &cfg.DB)
+	})
+	e.DELETE("/:id", func(c echo.Context) error {
+		return handlers.Delete(c, &cfg.DB)
+	})
+	e.GET("/", func(c echo.Context) error {
+		return handlers.GetAll(c, &cfg.DB)
+	})
+	e.GET("/:id", func(c echo.Context) error {
+		return handlers.Get(c, &cfg.DB)
+	})
+
+	port := cfg.GetServerPort()
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }
