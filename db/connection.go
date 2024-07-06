@@ -1,16 +1,15 @@
 package db
 
 import (
-	"api-postgresql/configs"
+	"api-postgresql/models"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq" // Importar o driver PostgreSQL
 	"go.uber.org/zap"
 )
 
-func OpenConnection() (*sql.DB, error) {
-	conf := configs.GetDB()
-
+// OpenConnection TODO -> Better way to use that function, idk if this parameter is really necessary
+func OpenConnection(conf *models.DBConfig) (*sql.DB, error) {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
@@ -21,7 +20,7 @@ func OpenConnection() (*sql.DB, error) {
 		zap.String("dbname", conf.Database),
 	)
 
-	sc := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
+	sc := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 		conf.Host, conf.Port, conf.User, conf.Pass, conf.Database)
 
 	logger.Info("Connection string", zap.String("connection_string", sc))

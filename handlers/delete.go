@@ -2,37 +2,38 @@ package handlers
 
 import (
 	"api-postgresql/models"
-	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"log"
+	"api-postgresql/services/controllers"
+	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 )
 
-func Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+func Delete(c echo.Context, dbConfig *models.DBConfig) error {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Printf("Erro ao fazer parse do ID: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{
+			Message: "Invalid ID",
+		})
 	}
 
-	rows, err := models.Delete(int64(id))
+	rows, err := controllers.Delete(dbConfig, int64(id))
 	if err != nil {
-		log.Printf("Erro ao remover registro do: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{
+			ErrorMessage: err.Error(),
+			Message:      "Failed to delete todo",
+		})
 	}
 
-	if rows > 1 {
-		log.Printf("Error: Foram removidos %d registros", rows)
+	if rows == 0 {
+		return c.JSON(http.StatusNotFound, models.HTTPErrorResponse{
+			Message: "Todo not found",
+		})
 	}
 
-	resp := map[string]any{
-		"Error":   false,
-		"Message": "Registro removido com sucesso",
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	return c.JSON(http.StatusOK, models.HTTPResponse{
+		Data: models.DeleteTodoResponse{
+			Message: "Todo deleted successfully",
+		},
+	})
 }

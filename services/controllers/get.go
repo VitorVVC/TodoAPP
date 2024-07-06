@@ -1,19 +1,23 @@
 package controllers
 
-import "api-postgresql/db"
+import (
+	"api-postgresql/db"
+	"api-postgresql/models"
+)
 
-func Get(id int64) (todo Todo, err error) {
-	conn, err := db.OpenConnection()
-
+func Get(conf *models.DBConfig, id int64) (models.Todo, error) {
+	conn, err := db.OpenConnection(conf)
 	if err != nil {
-		return
+		return models.Todo{}, err
 	}
-
 	defer conn.Close()
 
-	row := conn.QueryRow(`SELECT * FROM todos WHERE id = $1`, id)
+	var todo models.Todo
+	row := conn.QueryRow(`SELECT id, title, description, done, in_progress, priority FROM todos WHERE id = $1`, id)
+	err = row.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Done, &todo.InProgress, &todo.Priority)
+	if err != nil {
+		return models.Todo{}, err
+	}
 
-	err = row.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Done)
-
-	return
+	return todo, nil
 }

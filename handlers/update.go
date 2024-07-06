@@ -2,45 +2,47 @@ package handlers
 
 import (
 	"api-postgresql/models"
+	"api-postgresql/services/controllers"
 	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"log"
+	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
 )
 
-func Update(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+func Update(c echo.Context, dbConfig *models.DBConfig) error {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Printf("Erro ao fazer parse do ID: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{
+			Message: "Invalid ID",
+		})
 	}
 
 	var todo models.Todo
-
-	err = json.NewDecoder(r.Body).Decode(&todo)
+	err = json.NewDecoder(c.Request().Body).Decode(&todo)
 	if err != nil {
-		log.Printf("Erro ao fazer decode do JSON: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{
+			Message: "Invalid request payload",
+		})
 	}
 
-	rows, err := models.Update(int64(id), todo)
+	rows, err := controllers.Update(dbConfig, int64(id), todo)
 	if err != nil {
-		log.Printf("Erro ao update do: %v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{
+			ErrorMessage: err.Error(),
+			Message:      "Failed to update todo",
+		})
 	}
 
-	if rows > 1 {
-		log.Printf("Error: Foram Atualizados %d registros", rows)
+	if rows == 0 {
+		return c.JSON(http.StatusNotFound, models.HTTPErrorResponse{
+			Message: "Todo not found",
+		})
 	}
 
-	resp := map[string]any{
-		"Error":   false,
-		"Message": "Dados atualizados com sucesso",
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	return c.JSON(http.StatusOK, models.HTTPResponse{
+		Data: models.UpdateTodoResponse{
+			Message: "Todo updated successfully",
+		},
+	})
 }
