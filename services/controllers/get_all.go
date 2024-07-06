@@ -1,30 +1,32 @@
 package controllers
 
-import "api-postgresql/db"
+import (
+	"api-postgresql/db"
+	"api-postgresql/models"
+)
 
-func GetAll() (todos []Todo, err error) {
-	conn, err := db.OpenConnection()
-
+func GetAll(conf *models.DBConfig) ([]models.Todo, error) {
+	conn, err := db.OpenConnection(conf)
 	if err != nil {
-		return
+		return nil, err
 	}
-
 	defer conn.Close()
 
-	rows, err := conn.Query(`SELECT * FROM todos`)
-
+	rows, err := conn.Query(`SELECT id, title, description, done FROM todos`)
 	if err != nil {
-		return
+		return nil, err
 	}
+	defer rows.Close()
+
+	var todos []models.Todo
 	for rows.Next() {
-		var todo Todo
+		var todo models.Todo
 		err = rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Done)
 		if err != nil {
-			continue
+			return nil, err
 		}
-
 		todos = append(todos, todo)
 	}
 
-	return
+	return todos, nil
 }
