@@ -1,5 +1,3 @@
-Claro! Aqui está o conteúdo formatado em Markdown para que você possa copiar diretamente:
-
 # API PostgreSQL Project
 
 Este projeto é uma API construída em Go que interage com um banco de dados PostgreSQL. O frontend é uma aplicação React que consome essa API.
