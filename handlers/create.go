@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Create(c echo.Context, dbConfig *models.DBConfig) error {
+func Create(c echo.Context) error {
 	var todo models.Todo
 
 	err := json.NewDecoder(c.Request().Body).Decode(&todo)
@@ -18,7 +18,7 @@ func Create(c echo.Context, dbConfig *models.DBConfig) error {
 		})
 	}
 
-	id, err := controllers.Create(dbConfig, todo)
+	id, err := controllers.Create(todo)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{
 			ErrorMessage: err.Error(),

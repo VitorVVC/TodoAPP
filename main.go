@@ -18,20 +18,25 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+	}))
+
 	e.POST("/", func(c echo.Context) error {
-		return handlers.Create(c, &cfg.DB)
+		return handlers.Create(c)
 	})
 	e.PUT("/:id", func(c echo.Context) error {
-		return handlers.Update(c, &cfg.DB)
+		return handlers.Update(c)
 	})
 	e.DELETE("/:id", func(c echo.Context) error {
-		return handlers.Delete(c, &cfg.DB)
+		return handlers.Delete(c)
 	})
 	e.GET("/", func(c echo.Context) error {
-		return handlers.GetAll(c, &cfg.DB)
+		return handlers.GetAll(c)
 	})
 	e.GET("/:id", func(c echo.Context) error {
-		return handlers.Get(c, &cfg.DB)
+		return handlers.Get(c)
 	})
 
 	port := cfg.GetServerPort()

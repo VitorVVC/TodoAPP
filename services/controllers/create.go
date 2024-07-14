@@ -5,17 +5,15 @@ import (
 	"api-postgresql/models"
 )
 
-func Create(conf *models.DBConfig, todo models.Todo) (int, error) {
-	conn, err := db.OpenConnection(conf)
+func Create(todo models.Todo) (int, error) {
+	conn, err := db.OpenConnection()
 	if err != nil {
 		return 0, err
 	}
 	defer conn.Close()
 
 	var id int
-	err = conn.QueryRow(
-		`INSERT INTO todos (title, description, done, in_progress, priority) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-		todo.Title, todo.Description, todo.Done, todo.InProgress, todo.Priority).Scan(&id)
+	err = conn.QueryRow(`INSERT INTO todos (title, description, done) VALUES ($1, $2, $3) RETURNING id`, todo.Title, todo.Description, todo.Done).Scan(&id)
 	if err != nil {
 		return 0, err
 	}

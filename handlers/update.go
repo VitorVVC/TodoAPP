@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func Update(c echo.Context, dbConfig *models.DBConfig) error {
+func Update(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -26,7 +26,7 @@ func Update(c echo.Context, dbConfig *models.DBConfig) error {
 		})
 	}
 
-	rows, err := controllers.Update(dbConfig, int64(id), todo)
+	rows, err := controllers.Update(int64(id), todo)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{
 			ErrorMessage: err.Error(),

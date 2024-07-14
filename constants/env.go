@@ -1,17 +1,23 @@
 package constants
 
-const (
-	API_PORT      = "api.port"
-	POSTGRES_HOST = "database.host"
-	POSTGRES_PORT = "database.port"
-	POSTGRES_USER = "database.user"
-	POSTGRES_PASS = "database.pass"
-	POSTGRES_NAME = "database.name"
+import "os"
 
-	DefaultAPIPort      = "8080"
-	DefaultPostgresHost = "localhost"
-	DefaultPostgresPort = "5432"
-	DefaultPostgresUser = "user"
-	DefaultPostgresPass = "pass"
-	DefaultPostgresName = "dbname"
+func getEnv(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultValue
+}
+
+var (
+	ApiPort      = getEnv("API_PORT", "9000")
+	PostgresHost = getEnv("POSTGRES_HOST", "localhost")
+	PostgresPort = getEnv("POSTGRES_PORT", "5432")
+	PostgresUser = getEnv("POSTGRES_USER", "user")
+	PostgresPass = getEnv("POSTGRES_PASS", "pass")
+	PostgresName = getEnv("POSTGRES_NAME", "dbname")
+)
+
+const (
+	FutureConst = "Hello World!"
 )

@@ -17,10 +17,10 @@ func init() {
 		log.Fatalf("Error reading config file: %s", err)
 	}
 
-	Config[constants.API_PORT] = viper.GetString("api.port")
-	Config[constants.POSTGRES_HOST] = viper.GetString("database.host")
-	Config[constants.POSTGRES_PORT] = viper.GetString("database.port")
-	Config[constants.POSTGRES_USER] = viper.GetString("database.user")
-	Config[constants.POSTGRES_PASS] = viper.GetString("database.pass")
-	Config[constants.POSTGRES_NAME] = viper.GetString("database.name")
+	Config[constants.ApiPort] = viper.GetString("api.port")
+	Config[constants.PostgresHost] = viper.GetString("database.host")
+	Config[constants.PostgresPort] = viper.GetString("database.port")
+	Config[constants.PostgresUser] = viper.GetString("database.user")
+	Config[constants.PostgresPass] = viper.GetString("database.pass")
+	Config[constants.PostgresName] = viper.GetString("database.name")
 }

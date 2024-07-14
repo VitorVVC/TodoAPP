@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func Get(c echo.Context, dbConfig *models.DBConfig) error {
+func Get(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -18,7 +18,7 @@ func Get(c echo.Context, dbConfig *models.DBConfig) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	todo, err := controllers.Get(dbConfig, int64(id))
+	todo, err := controllers.Get(int64(id))
 	if err != nil {
 		response := models.HTTPErrorResponse{
 			ErrorMessage: err.Error(),
