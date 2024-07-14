@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"api-postgresql/db"
-	"api-postgresql/models"
 )
 
-func Delete(conf *models.DBConfig, id int64) (int64, error) {
-	conn, err := db.OpenConnection(conf)
+func Delete(id int64) (int64, error) {
+	conn, err := db.OpenConnection()
 	if err != nil {
 		return 0, err
 	}

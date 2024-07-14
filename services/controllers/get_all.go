@@ -5,26 +5,27 @@ import (
 	"api-postgresql/models"
 )
 
-func GetAll(conf *models.DBConfig) ([]models.Todo, error) {
-	conn, err := db.OpenConnection(conf)
+func GetAll() ([]models.Todo, error) {
+	var todos []models.Todo
+
+	conn, err := db.OpenConnection()
 	if err != nil {
 		return nil, err
 	}
 	defer conn.Close()
 
-	rows, err := conn.Query(`SELECT id, title, description, done FROM todos`)
+	rows, err := conn.Query(`SELECT * FROM todos`)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var todos []models.Todo
 	for rows.Next() {
 		var todo models.Todo
-		err = rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Done)
+		err = rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Done, &todo.InProgress, &todo.Priority)
 		if err != nil {
-			return nil, err
+			continue
 		}
+
 		todos = append(todos, todo)
 	}
 
