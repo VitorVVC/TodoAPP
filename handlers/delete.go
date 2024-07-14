@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func Delete(c echo.Context, dbConfig *models.DBConfig) error {
+func Delete(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -17,7 +17,7 @@ func Delete(c echo.Context, dbConfig *models.DBConfig) error {
 		})
 	}
 
-	rows, err := controllers.Delete(dbConfig, int64(id))
+	rows, err := controllers.Delete(int64(id))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{
 			ErrorMessage: err.Error(),

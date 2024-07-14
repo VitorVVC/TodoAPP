@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func GetAll(c echo.Context, dbConfig *models.DBConfig) error {
-	todos, err := controllers.GetAll(dbConfig)
+func GetAll(c echo.Context) error {
+	todos, err := controllers.GetAll()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{
 			ErrorMessage: err.Error(),
