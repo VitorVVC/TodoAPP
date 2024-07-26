@@ -2,25 +2,32 @@ package utils
 
 import (
 	"api-postgresql/constants"
-	"github.com/spf13/viper"
-	"log"
+	"go.uber.org/zap"
+	"os"
 )
 
-var Config = map[string]string{}
+var Defaults = map[string]interface{}{
+	constants.ApiPort:      "your_port",
+	constants.PostgresHost: "your_host",
+	constants.PostgresPort: "5432",
+	constants.PostgresUser: "your_user",
+	constants.PostgresPass: "your_pass",
+	constants.PostgresName: "your_name",
+}
 
-func init() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("toml")
-	viper.AddConfigPath(".")
+func EnvString(key string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		valueInterface, ok := Defaults[key]
+		if !ok {
+			zap.L().Fatal("missing env", zap.Error(ErrMissingEnv), zap.String("env", key))
+		}
 
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading config file: %s", err)
+		value, ok = valueInterface.(string)
+		if !ok {
+			zap.L().Fatal("wrong type", zap.Error(ErrWrongEnvType), zap.String("env", key))
+		}
 	}
 
-	Config[constants.ApiPort] = viper.GetString("api.port")
-	Config[constants.PostgresHost] = viper.GetString("database.host")
-	Config[constants.PostgresPort] = viper.GetString("database.port")
-	Config[constants.PostgresUser] = viper.GetString("database.user")
-	Config[constants.PostgresPass] = viper.GetString("database.pass")
-	Config[constants.PostgresName] = viper.GetString("database.name")
+	return value
 }
