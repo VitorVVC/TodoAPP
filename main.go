@@ -39,6 +39,6 @@ func main() {
 		return handlers.Get(c)
 	})
 
-	port := cfg.GetServerPort()
+	port := cfg.API.Port
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }

@@ -3,20 +3,21 @@ package configs
 import (
 	"api-postgresql/constants"
 	"api-postgresql/models"
+	"api-postgresql/utils"
 	"log"
 )
 
 func LoadConfig() (*models.Config, error) {
 	cfg := &models.Config{
 		API: models.APIConfig{
-			Port: constants.ApiPort,
+			Port: utils.EnvString(constants.ApiPort),
 		},
 		DB: models.DBConfig{
-			Host:     constants.PostgresHost,
-			Port:     constants.PostgresPort,
-			User:     constants.PostgresUser,
-			Pass:     constants.PostgresPass,
-			Database: constants.PostgresName,
+			Host:     utils.EnvString(constants.PostgresHost),
+			Port:     utils.EnvString(constants.PostgresPort),
+			User:     utils.EnvString(constants.PostgresUser),
+			Pass:     utils.EnvString(constants.PostgresPass),
+			Database: utils.EnvString(constants.PostgresName),
 		},
 	}
 

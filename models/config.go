@@ -16,11 +16,3 @@ type DBConfig struct {
 	Pass     string
 	Database string
 }
-
-func (c *Config) GetDB() DBConfig {
-	return c.DB
-}
-
-func (c *Config) GetServerPort() string {
-	return c.API.Port
-}
