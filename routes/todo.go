@@ -7,7 +7,7 @@ import (
 )
 
 func Todo(app *echo.Group) {
-	group := app.Group(string(constants.RootRoute))
+	group := app.Group(string(constants.TodoRoute))
 	controller := controllers.NewTodoController()
 
 	group.POST("", controller.Create)
