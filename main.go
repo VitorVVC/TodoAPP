@@ -2,7 +2,7 @@ package main
 
 import (
 	"api-postgresql/configs"
-	"api-postgresql/handlers"
+	"api-postgresql/routes"
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -31,21 +31,8 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
-	e.POST("/", func(c echo.Context) error {
-		return handlers.Create(c)
-	})
-	e.PUT("/:id", func(c echo.Context) error {
-		return handlers.Update(c)
-	})
-	e.DELETE("/:id", func(c echo.Context) error {
-		return handlers.Delete(c)
-	})
-	e.GET("/", func(c echo.Context) error {
-		return handlers.GetAll(c)
-	})
-	e.GET("/:id", func(c echo.Context) error {
-		return handlers.Get(c)
-	})
+	api := e.Group("/")
+	routes.Todo(api)
 
 	port := cfg.API.Port
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
