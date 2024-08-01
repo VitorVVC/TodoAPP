@@ -3,6 +3,7 @@ package main
 import (
 	"api-postgresql/configs"
 	"api-postgresql/routes"
+	_ "api-postgresql/utils" // Importar utils para garantir que o init() seja chamado
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -19,7 +20,7 @@ func main() {
 
 	cfg, err := configs.LoadConfig()
 	if err != nil {
-		panic(fmt.Sprintf("Erro ao carregar a configuração: %v", err))
+		log.Fatalf("Erro ao carregar a configuração: %v", err)
 	}
 
 	e := echo.New()
@@ -31,7 +32,7 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
-	api := e.Group("/")
+	api := e.Group("")
 	routes.Todo(api)
 
 	port := cfg.API.Port
