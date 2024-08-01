@@ -2,7 +2,9 @@ package utils
 
 import (
 	"api-postgresql/constants"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
+	"log"
 	"os"
 )
 
@@ -15,18 +17,28 @@ var Defaults = map[string]interface{}{
 	constants.PostgresName: "your_name",
 }
 
-func EnvString(key string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		valueInterface, ok := Defaults[key]
-		if !ok {
-			zap.L().Fatal("missing env", zap.Error(ErrMissingEnv), zap.String("env", key))
-		}
+func init() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Erro ao carregar o arquivo .env: %v", err)
+	}
 
-		value, ok = valueInterface.(string)
-		if !ok {
-			zap.L().Fatal("wrong type", zap.Error(ErrWrongEnvType), zap.String("env", key))
+	for key := range Defaults {
+		if value := os.Getenv(key); value != "" {
+			Defaults[key] = value
 		}
+	}
+}
+
+func EnvString(key string) string {
+	valueInterface, ok := Defaults[key]
+	if !ok {
+		zap.L().Fatal("missing env", zap.Error(ErrMissingEnv), zap.String("env", key))
+	}
+
+	value, ok := valueInterface.(string)
+	if !ok {
+		zap.L().Fatal("wrong type", zap.Error(ErrWrongEnvType), zap.String("env", key))
 	}
 
 	return value
