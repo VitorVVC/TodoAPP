@@ -8,9 +8,6 @@ remember.md
 *.out
 go.work
 
-go.sum
-go.mod
-
 .idea/
 *.iml
 *.suo
