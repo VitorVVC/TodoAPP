@@ -4,8 +4,8 @@ import (
 	"api-postgresql/db"
 	"api-postgresql/models"
 	"net/http"
-	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,25 +21,27 @@ func (t *TodoController) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{ErrorMessage: "Invalid request payload"})
 	}
 
+	todo.UUID = uuid.New()
+
 	conn, err := db.OpenConnection()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{ErrorMessage: "Failed to connect to database"})
 	}
 	defer conn.Close()
 
-	var id int
-	err = conn.QueryRow(`INSERT INTO todos (title, description, done, in_progress, priority) VALUES ($1, $2, $3, $4, $5) RETURNING id`, todo.Title, todo.Description, todo.Done, todo.InProgress, todo.Priority).Scan(&id)
+	_, err = conn.Exec(`INSERT INTO todos (uuid, title, description, done, in_progress, priority) VALUES ($1, $2, $3, $4, $5, $6)`, todo.UUID, todo.Title, todo.Description, todo.Done, todo.InProgress, todo.Priority)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{ErrorMessage: "Failed to create todo"})
 	}
 
-	return c.JSON(http.StatusCreated, map[string]int{"id": id})
+	return c.JSON(http.StatusCreated, map[string]uuid.UUID{"uuid": todo.UUID})
 }
 
 func (t *TodoController) Update(c echo.Context) error {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	uuidStr := c.Param("uuid")
+	todoUUID, err := uuid.Parse(uuidStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{ErrorMessage: "Invalid ID"})
+		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{ErrorMessage: "Invalid UUID"})
 	}
 
 	var todo models.Todo
@@ -53,8 +55,8 @@ func (t *TodoController) Update(c echo.Context) error {
 	}
 	defer conn.Close()
 
-	res, err := conn.Exec(`UPDATE todos SET title=$1, description=$2, done=$3, in_progress=$4, priority=$5 WHERE id=$6`,
-		todo.Title, todo.Description, todo.Done, todo.InProgress, todo.Priority, id)
+	res, err := conn.Exec(`UPDATE todos SET title=$1, description=$2, done=$3, in_progress=$4, priority=$5 WHERE uuid=$6`,
+		todo.Title, todo.Description, todo.Done, todo.InProgress, todo.Priority, todoUUID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{ErrorMessage: "Failed to update todo"})
 	}
@@ -68,9 +70,10 @@ func (t *TodoController) Update(c echo.Context) error {
 }
 
 func (t *TodoController) Delete(c echo.Context) error {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	uuidStr := c.Param("uuid")
+	todoUUID, err := uuid.Parse(uuidStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{ErrorMessage: "Invalid ID"})
+		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{ErrorMessage: "Invalid UUID"})
 	}
 
 	conn, err := db.OpenConnection()
@@ -79,7 +82,7 @@ func (t *TodoController) Delete(c echo.Context) error {
 	}
 	defer conn.Close()
 
-	res, err := conn.Exec(`DELETE FROM todos WHERE id=$1`, id)
+	res, err := conn.Exec(`DELETE FROM todos WHERE uuid=$1`, todoUUID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{ErrorMessage: "Failed to delete todo"})
 	}
@@ -93,9 +96,10 @@ func (t *TodoController) Delete(c echo.Context) error {
 }
 
 func (t *TodoController) Get(c echo.Context) error {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	uuidStr := c.Param("uuid")
+	todoUUID, err := uuid.Parse(uuidStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{ErrorMessage: "Invalid ID"})
+		return c.JSON(http.StatusBadRequest, models.HTTPErrorResponse{ErrorMessage: "Invalid UUID"})
 	}
 
 	conn, err := db.OpenConnection()
@@ -105,8 +109,8 @@ func (t *TodoController) Get(c echo.Context) error {
 	defer conn.Close()
 
 	var todo models.Todo
-	row := conn.QueryRow(`SELECT id, title, description, done, in_progress, priority FROM todos WHERE id = $1`, id)
-	err = row.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Done, &todo.InProgress, &todo.Priority)
+	row := conn.QueryRow(`SELECT uuid, title, description, done, in_progress, priority FROM todos WHERE uuid = $1`, todoUUID)
+	err = row.Scan(&todo.UUID, &todo.Title, &todo.Description, &todo.Done, &todo.InProgress, &todo.Priority)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{ErrorMessage: "Failed to retrieve todo"})
 	}
@@ -121,7 +125,7 @@ func (t *TodoController) GetAll(c echo.Context) error {
 	}
 	defer conn.Close()
 
-	rows, err := conn.Query(`SELECT id, title, description, done, in_progress, priority FROM todos`)
+	rows, err := conn.Query(`SELECT uuid, title, description, done, in_progress, priority FROM todos`)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{ErrorMessage: "Failed to retrieve todos"})
 	}
@@ -130,7 +134,7 @@ func (t *TodoController) GetAll(c echo.Context) error {
 	var todos []models.Todo
 	for rows.Next() {
 		var todo models.Todo
-		err = rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Done, &todo.InProgress, &todo.Priority)
+		err = rows.Scan(&todo.UUID, &todo.Title, &todo.Description, &todo.Done, &todo.InProgress, &todo.Priority)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, models.HTTPErrorResponse{ErrorMessage: "Failed to scan todo"})
 		}
