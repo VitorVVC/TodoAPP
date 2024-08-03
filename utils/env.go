@@ -20,7 +20,7 @@ var Defaults = map[string]interface{}{
 func init() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Erro ao carregar o arquivo .env: %v", err)
+		log.Fatalf("error to load .env: %v", err)
 	}
 
 	for key := range Defaults {

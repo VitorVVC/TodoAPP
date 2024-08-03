@@ -27,7 +27,7 @@ func LoadConfig() (*models.Config, error) {
 func GetDBConfig() *models.DBConfig {
 	cfg, err := LoadConfig()
 	if err != nil {
-		log.Fatalf("Erro ao carregar a configuração: %v", err)
+		log.Fatalf("erro to load configs: %v", err)
 	}
 	return &cfg.DB
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"api-postgresql/configs"
 	"api-postgresql/routes"
-	_ "api-postgresql/utils" // Importar utils para garantir que o init() seja chamado
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -15,12 +14,12 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Erro ao carregar o arquivo .env: %v", err)
+		log.Fatalf("error to load .env: %v", err)
 	}
 
 	cfg, err := configs.LoadConfig()
 	if err != nil {
-		log.Fatalf("Erro ao carregar a configuração: %v", err)
+		log.Fatalf("error to load configs: %v", err)
 	}
 
 	e := echo.New()
