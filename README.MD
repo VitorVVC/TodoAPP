@@ -1,6 +1,6 @@
 # API PostgreSQL Project
 
-This README is on english, but i have in another langueages: [PT-BR](docs/readmePTBR.md)
+This README is in English, but it is available in other languages: [PT-BR](docs/readmePTBR.md)
 
 This project is an API built in Go that interacts with a PostgreSQL database. The frontend is a React application that consumes this API.
 
@@ -20,7 +20,7 @@ git clone https://github.com/your-username/your-repository.git
 cd your-repository/api-postgresql
 ```
 
-### 2. CSet Up Environment Variables
+### 2. Set Up Environment Variables
 
 Create a .env file in the root directory of the api-postgresql project with the following content:
 
