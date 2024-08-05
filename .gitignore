@@ -3,7 +3,6 @@
 *.dll
 *.so
 *.dylib
-remember.md
 
 *.out
 go.work
