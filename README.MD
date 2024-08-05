@@ -1,29 +1,31 @@
 # API PostgreSQL Project
 
-Este projeto é uma API construída em Go que interage com um banco de dados PostgreSQL. O frontend é uma aplicação React que consome essa API.
+This README is on english, but i have in another langueages: [PT-BR](docs/readmePTBR.md)
 
-## Pré-requisitos
+This project is an API built in Go that interacts with a PostgreSQL database. The frontend is a React application that consumes this API.
+
+## Prerequisites
 
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 
-## Configuração do Projeto
+## Project Setup
 
-### 1. Clonar o Repositório
+### 1. Clone the Repository
 
-Clone o repositório para a sua máquina local:
+Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio/api-postgresql
+git clone https://github.com/your-username/your-repository.git
+cd your-repository/api-postgresql
 ```
 
-### 2. Configurar Variáveis de Ambiente
+### 2. CSet Up Environment Variables
 
-Crie um arquivo `.env` no diretório raiz do projeto `api-postgresql` com o conteúdo abaixo:
+Create a .env file in the root directory of the api-postgresql project with the following content:
 
 ```env
-DATABASE_URL=postgresql://usuario:senha@endereco-do-banco:porta/nome-do-banco?sslmode=require
+DATABASE_URL=postgresql://user:password@db-host:port/db-name?sslmode=require
 API_PORT=4000
 POSTGRES_HOST=your_host
 POSTGRES_PORT=your_postgres_port
@@ -32,40 +34,39 @@ POSTGRES_PASS=your_pass
 POSTGRES_NAME=your_name
 ```
 
-### 3. Construir e Iniciar os Contêineres
+### 3. Build and Start the Containers
 
-Use o Docker Compose para construir e iniciar os contêineres:
+Use Docker Compose to build and start the containers:
 
 ```bash
 docker-compose up --build
 ```
 
-### 4. Acessar a Aplicação
+### 4. Access the Application
 
-- **Backend:** A API estará disponível em `http://localhost:9000`
-- **Frontend:** A aplicação React estará disponível em `http://localhost:3000`
+- **Backend**: The API will be available at http://localhost:9000
+- **Frontend**: The React application will be available at http://localhost:3000
 
-## Comandos Úteis
+## Useful Commands
 
-### Parar os Contêineres
+### Stop the Containers
 
 ```bash
 docker-compose down
 ```
 
-### Ver Logs
+### View Logs
 
 ```bash
 docker-compose logs -f
 ```
 
-### Remover Contêineres, Redes e Volumes
+### Remove Containers, Networks, and Volumes
 
 ```bash
 docker-compose down -v
 ```
 
-## Contribuição
+## Contribution
 
-Contribuições são bem-vindas! Por favor, envie um pull request ou abra uma issue para discutir o que você gostaria de mudar.
-
+Contributions are welcome! Please submit a pull request or open an issue to discuss what you would like to change.
