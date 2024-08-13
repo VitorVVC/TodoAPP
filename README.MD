@@ -1,4 +1,4 @@
-# API PostgreSQL Project
+# Todo APP
 
 This README is on english, but i have in another langueages: [PT-BR](docs/readmePTBR.md)
 
