@@ -31,8 +31,7 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
-	api := e.Group("")
-	routes.Todo(api)
+	routes.Load(e)
 
 	port := cfg.API.Port
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
