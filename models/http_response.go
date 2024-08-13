@@ -1,12 +1,15 @@
 package models
 
+import "encoding/json"
+
 type HTTPResponse struct {
 	Data interface{} `json:"data"`
 }
 
 type HTTPErrorResponse struct {
-	ErrorMessage string `json:"errorMessage,omitempty"`
-	Message      string `json:"message"`
+	Error        json.RawMessage `json:"error,omitempty"`
+	ErrorMessage string          `json:"errorMessage,omitempty"`
+	Message      string          `json:"message"`
 }
 
 type CreateTodoResponse struct {
