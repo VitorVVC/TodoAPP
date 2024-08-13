@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type User struct {
 	BaseModel
@@ -10,5 +13,6 @@ type User struct {
 	Identity string `json:"identity,omitempty" validate:"omitempty,len=11" query:"identity"`
 	Name     string `json:"name" gorm:"index" validate:"required,min=3" query:"name"`
 
+	UUID      uuid.UUID      `json:"uuid" query:"uuid"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt" gorm:"uniqueIndex:idx_users_email"`
 }
